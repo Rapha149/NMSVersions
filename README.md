@@ -29,8 +29,8 @@ try {
 
 ## Updates
 
-The file is updated every 4 hours.  
-But the NMS versions are parsed from the NMS repository at [repo.codemc.io](https://repo.codemc.io/#browse/browse:nms:org%2Fspigotmc%2Fspigot) which means that that repository first has to update before the file can get updated.
+The file is updated every 12 hours.  
+However, the NMS versions are parsed from the NMS repository at [repo.codemc.io](https://repo.codemc.io/#browse/browse:nms:org%2Fspigotmc%2Fspigot) which means that that repository first has to update before the file can get updated.
 
 ## Versions
 
