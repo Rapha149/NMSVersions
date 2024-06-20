@@ -19,7 +19,7 @@ try {
         if (json.has(Bukkit.getBukkitVersion())) {
             String nmsVersion = json.getString(Bukkit.getBukkitVersion());
         } else {
-            // NMS Version is not yet available in the json file, see the updates section
+            // Version is not yet available in the json file, see the updates section
         }
     }
 } catch (IOException e) {
