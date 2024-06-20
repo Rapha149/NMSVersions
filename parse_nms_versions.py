@@ -1,22 +1,26 @@
 import json
 import os
+import re
 import subprocess
 import sys
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ElementTree
 
 import requests
+from tabulate import tabulate
 
 
 def main():
     namespaces = {'pom': 'http://maven.apache.org/POM/4.0.0'}
 
-    file_path = 'nms-versions.json'
-    if os.path.exists(file_path):
-        if not os.path.isfile(file_path):
+    version_file_path = 'nms-versions.json'
+    readme_file_path = 'README.md'
+
+    if os.path.exists(version_file_path):
+        if not os.path.isfile(version_file_path):
             print('Not updating nms-versions.json because it is not a file', file=sys.stderr)
             exit(1)
 
-        with open(file_path) as file:
+        with open(version_file_path) as file:
             versions = json.load(file)
     else:
         versions = {}
@@ -29,7 +33,7 @@ def main():
         version_order.append(version)
 
         if version in versions:
-            print(f'Skipping {version} (already in {file_path})')
+            print(f'Skipping {version} (already in {version_file_path})')
             continue
 
         version_xml = _get_xml(f'https://repo.codemc.io/repository/nms/org/spigotmc/spigot/{version}/maven-metadata.xml')
@@ -44,22 +48,42 @@ def main():
         new_versions.append(version)
         print(f'Parsed {version} -> {nms_version}')
 
-    if new_versions:
-        with open(file_path, 'w') as file:
-            sorted_versions = dict(sorted(versions.items(), key=lambda x: version_order.index(x[0])))
+    if new_versions or True:
+        sorted_versions = dict(sorted(versions.items(), key=lambda x: version_order.index(x[0])))
+        with open(version_file_path, 'w') as file:
             json.dump(sorted_versions, file, indent=4)
 
-    print(f'\nAdded {len(new_versions)} new version(s) to {file_path}')
+        if os.path.isfile(readme_file_path):
+            with open(readme_file_path) as file:
+                readme = file.read()
+            if re.search('<!-- ?versions_start ?-->(.|\n)*<!-- ?versions_end ?-->', readme):
+                rows = []
+                last_major = None
+                for bukkit_version, nms_version in sorted_versions.items():
+                    minecraft_version = bukkit_version.split('-')[0]
+                    major = int(minecraft_version.split('.')[1])
+                    if last_major is not None and major != last_major:
+                        rows.append(())
+                    last_major = major
+                    rows.append((minecraft_version, nms_version, bukkit_version))
 
-    subprocess.call(['git', 'add', file_path])
+                table = tabulate(rows, headers=['Minecraft Version', 'NMS Version', 'Bukkit Version String'], tablefmt='pipe')
+                readme = re.sub('<!-- ?versions_start ?-->(.|\n)*<!-- ?versions_end ?-->',
+                                f'<!-- versions_start -->\n{table}\n<!-- versions_end -->', readme)
+                with open(readme_file_path, 'w') as file:
+                    file.write(readme)
+
+    print(f'\nAdded {len(new_versions)} new version(s) to {version_file_path}')
+
+    subprocess.call(['git', 'add', version_file_path, readme_file_path])
     subprocess.call(['git', 'commit', '-m', f'Add version(s): {", ".join(new_versions)}'])
 
 
-def _get_xml(url: str) -> ET.Element:
+def _get_xml(url: str) -> ElementTree.Element:
     response = requests.get(url)
     if int(response.status_code / 100) != 2:
         raise Exception(f'Failed to get {url}: {response.status_code}')
-    return ET.fromstring(response.content)
+    return ElementTree.fromstring(response.content)
 
 
 if __name__ == '__main__':
