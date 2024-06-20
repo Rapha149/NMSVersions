@@ -46,7 +46,7 @@ def main():
 
     if new_versions:
         with open(file_path, 'w') as file:
-            sorted_versions = dict(sorted(versions.items(), key=lambda x: version_order.index(x[0]))),
+            sorted_versions = dict(sorted(versions.items(), key=lambda x: version_order.index(x[0])))
             json.dump(sorted_versions, file, indent=4)
 
     print(f'\nAdded {len(new_versions)} new version(s) to {file_path}')
