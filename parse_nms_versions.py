@@ -3,8 +3,11 @@ import os
 import re
 import subprocess
 import sys
+import urllib.parse
 import xml.etree.ElementTree as ElementTree
+from datetime import datetime
 
+import pytz
 import requests
 from tabulate import tabulate
 
@@ -48,6 +51,7 @@ def main():
         new_versions.append(version)
         print(f'Parsed {version} -> {nms_version}')
 
+    versions = {key: value for key, value in versions.items() if key in version_order}
     if new_versions or True:
         sorted_versions = dict(sorted(versions.items(), key=lambda x: version_order.index(x[0])))
         with open(version_file_path, 'w') as file:
@@ -55,7 +59,9 @@ def main():
 
         if os.path.isfile(readme_file_path):
             with open(readme_file_path) as file:
-                readme = file.read()
+                readme_old = file.read()
+                readme = readme_old
+
             if re.search('<!-- ?versions_start ?-->(.|\n)*<!-- ?versions_end ?-->', readme):
                 rows = []
                 last_major = None
@@ -70,6 +76,20 @@ def main():
                 table = tabulate(rows, headers=['Minecraft Version', 'NMS Version', 'Bukkit Version String'], tablefmt='pipe')
                 readme = re.sub('<!-- ?versions_start ?-->(.|\n)*<!-- ?versions_end ?-->',
                                 f'<!-- versions_start -->\n{table}\n<!-- versions_end -->', readme)
+
+            if re.search('<!-- ?date_start ?-->.*<!-- ?date_end ?-->', readme):
+                date = urllib.parse.quote(datetime.now(pytz.timezone('UTC')).strftime('%Y/%m/%d %H:%M %Z'), safe='')
+                badge_date = f'![Last Update](https://img.shields.io/badge/Last%20Update-{date}-blue)'
+                readme = re.sub('<!-- ?date_start ?-->.*<!-- ?date_end ?-->',
+                                f'<!-- date_start -->{badge_date}<!-- date_end -->', readme)
+
+            if re.search('<!-- ?latest_version_start ?-->.*<!-- ?latest_version_end ?-->', readme):
+                latest_version = urllib.parse.quote(version_order[-1].split('-')[0], safe='')
+                badge_latest_version = f'![Latest Included Version](https://img.shields.io/badge/Latest%20Included%20Version-{latest_version}-slateblue)'
+                readme = re.sub('<!-- ?latest_version_start ?-->.*<!-- ?latest_version_end ?-->',
+                                f'<!-- latest_version_start -->{badge_latest_version}<!-- latest_version_end -->', readme)
+
+            if readme != readme_old:
                 with open(readme_file_path, 'w') as file:
                     file.write(readme)
 
