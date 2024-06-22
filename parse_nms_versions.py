@@ -52,15 +52,14 @@ def main():
         print(f'Parsed {version} -> {nms_version}')
 
     versions = {key: value for key, value in versions.items() if key in version_order}
-    if new_versions or True:
+    if new_versions:
         sorted_versions = dict(sorted(versions.items(), key=lambda x: version_order.index(x[0])))
         with open(version_file_path, 'w') as file:
             json.dump(sorted_versions, file, indent=4)
 
         if os.path.isfile(readme_file_path):
             with open(readme_file_path) as file:
-                readme_old = file.read()
-                readme = readme_old
+                readme = file.read()
 
             if re.search('<!-- ?versions_start ?-->(.|\n)*<!-- ?versions_end ?-->', readme):
                 rows = []
@@ -88,10 +87,9 @@ def main():
                 badge_latest_version = f'![Latest Included Version](https://img.shields.io/badge/Latest%20Included%20Version-{latest_version}-slateblue)'
                 readme = re.sub('<!-- ?latest_version_start ?-->.*<!-- ?latest_version_end ?-->',
                                 f'<!-- latest_version_start -->{badge_latest_version}<!-- latest_version_end -->', readme)
-
-            if readme != readme_old:
-                with open(readme_file_path, 'w') as file:
-                    file.write(readme)
+                
+            with open(readme_file_path, 'w') as file:
+                file.write(readme)
 
     print(f'\nAdded {len(new_versions)} new version(s) to {version_file_path}')
 
