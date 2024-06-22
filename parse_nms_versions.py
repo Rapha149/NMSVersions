@@ -77,14 +77,14 @@ def main():
                                 f'<!-- versions_start -->\n{table}\n<!-- versions_end -->', readme)
 
             if re.search('<!-- ?date_start ?-->.*<!-- ?date_end ?-->', readme):
-                date = urllib.parse.quote(datetime.now(pytz.timezone('UTC')).strftime('%Y/%m/%d %H:%M %Z'), safe='')
-                badge_date = f'![Last Update](https://img.shields.io/badge/Last%20Update-{date}-blue)'
+                date = urllib.parse.quote(datetime.now(pytz.timezone('UTC')).strftime('%Y--%m--%d_%H:%M_%Z'), safe='')
+                badge_date = f'![Last Update](https://img.shields.io/badge/Last_Update-{date}-blue)'
                 readme = re.sub('<!-- ?date_start ?-->.*<!-- ?date_end ?-->',
                                 f'<!-- date_start -->{badge_date}<!-- date_end -->', readme)
 
             if re.search('<!-- ?latest_version_start ?-->.*<!-- ?latest_version_end ?-->', readme):
                 latest_version = urllib.parse.quote(version_order[-1].split('-')[0], safe='')
-                badge_latest_version = f'![Latest Included Version](https://img.shields.io/badge/Latest%20Included%20Version-{latest_version}-slateblue)'
+                badge_latest_version = f'![Latest Included Version](https://img.shields.io/badge/Latest_Included_Version-{latest_version}-slateblue)'
                 readme = re.sub('<!-- ?latest_version_start ?-->.*<!-- ?latest_version_end ?-->',
                                 f'<!-- latest_version_start -->{badge_latest_version}<!-- latest_version_end -->', readme)
                 
