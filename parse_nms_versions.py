@@ -57,6 +57,11 @@ def main():
         with open(version_file_path, 'w') as file:
             json.dump(sorted_versions, file, indent=4)
 
+        version_list = []
+        for bukkit_version, nms_version in sorted_versions.items():
+            minecraft_version = bukkit_version.split('-')[0]
+            version_list.append((minecraft_version, bukkit_version, nms_version))
+
         if os.path.isfile(readme_file_path):
             with open(readme_file_path) as file:
                 readme = file.read()
@@ -64,8 +69,7 @@ def main():
             if re.search('<!-- ?versions_start ?-->(.|\n)*<!-- ?versions_end ?-->', readme):
                 rows = []
                 last_major = None
-                for bukkit_version, nms_version in sorted_versions.items():
-                    minecraft_version = bukkit_version.split('-')[0]
+                for minecraft_version, bukkit_version, nms_version in version_list:
                     major = int(minecraft_version.split('.')[1])
                     if last_major is not None and major != last_major:
                         rows.append(())
@@ -87,12 +91,28 @@ def main():
                 badge_latest_version = f'![Latest Included Version](https://img.shields.io/badge/Latest_Included_Version-{latest_version}-slateblue)'
                 readme = re.sub('<!-- ?latest_version_start ?-->.*<!-- ?latest_version_end ?-->',
                                 f'<!-- latest_version_start -->{badge_latest_version}<!-- latest_version_end -->', readme)
-                
+
             with open(readme_file_path, 'w') as file:
                 file.write(readme)
 
         subprocess.call(['git', 'add', version_file_path, readme_file_path])
         subprocess.call(['git', 'commit', '-m', f'Add version(s): {", ".join(new_versions)}'])
+
+        ntfy_url, ntfy_token = os.getenv('NTFY_URL'), os.getenv('NTFY_TOKEN')
+        if ntfy_url:
+            headers = {}
+            if ntfy_token:
+                headers['Authorization'] = ntfy_token
+            for minecraft_version, bukkit_version, nms_version in version_list:
+                if bukkit_version in new_versions:
+                    requests.post(
+                        ntfy_url,
+                        data=f'NMS Version: {nms_version}',
+                        headers={
+                            **headers,
+                            'Title': f'New Minecraft Version: {minecraft_version}'
+                        }
+                    )
 
     print(f'\nAdded {len(new_versions)} new version(s) to {version_file_path}')
 
