@@ -91,10 +91,10 @@ def main():
             with open(readme_file_path, 'w') as file:
                 file.write(readme)
 
-    print(f'\nAdded {len(new_versions)} new version(s) to {version_file_path}')
+        subprocess.call(['git', 'add', version_file_path, readme_file_path])
+        subprocess.call(['git', 'commit', '-m', f'Add version(s): {", ".join(new_versions)}'])
 
-    subprocess.call(['git', 'add', version_file_path, readme_file_path])
-    subprocess.call(['git', 'commit', '-m', f'Add version(s): {", ".join(new_versions)}'])
+    print(f'\nAdded {len(new_versions)} new version(s) to {version_file_path}')
 
 
 def _get_xml(url: str) -> ElementTree.Element:
