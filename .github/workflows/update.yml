@@ -28,6 +28,9 @@ jobs:
     - name: Run update script
       run: |
         python parse_nms_versions.py
+      env:
+        NTFY_URL: ${{ secrets.NTFY_URL }}
+        NTFY_TOKEN: ${{ secrets.NTFY_TOKEN }}
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
