@@ -69,7 +69,7 @@ def main():
             if re.search('<!-- ?versions_start ?-->(.|\n)*<!-- ?versions_end ?-->', readme):
                 rows = []
                 last_major = None
-                for minecraft_version, bukkit_version, nms_version in version_list:
+                for minecraft_version, bukkit_version, nms_version in version_list[::-1]:
                     major = int(minecraft_version.split('.')[1])
                     if last_major is not None and major != last_major:
                         rows.append(())
@@ -110,7 +110,8 @@ def main():
                         data=f'NMS Version: {nms_version}',
                         headers={
                             **headers,
-                            'Title': f'New Minecraft Version: {minecraft_version}'
+                            'Title': f'New Minecraft Version: {minecraft_version}',
+                            'Actions': 'view, View versions, https://github.com/Rapha149/NMSVersions#versions, clear=true'
                         }
                     )
 
