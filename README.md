@@ -1,4 +1,4 @@
-# NMS Versions [![Update Task](https://img.shields.io/github/actions/workflow/status/Rapha149/NMSVersions/update.yml?logo=github&label=Update%20Task)](https://github.com/Rapha149/NMSVersions/actions/workflows/update.yml) <!-- date_start -->![Last Update](https://img.shields.io/badge/Last_Update-2025--08--04_01%3A23_UTC-blue)<!-- date_end --> <!-- latest_version_start -->![Latest Included Version](https://img.shields.io/badge/Latest_Included_Version-1.21.8-slateblue)<!-- latest_version_end -->
+# NMS Versions [![Update Task](https://img.shields.io/github/actions/workflow/status/Rapha149/NMSVersions/update.yml?logo=github&label=Update%20Task)](https://github.com/Rapha149/NMSVersions/actions/workflows/update.yml) <!-- date_start -->![Last Update](https://img.shields.io/badge/Last_Update-2025--10--01_01%3A13_UTC-blue)<!-- date_end --> <!-- latest_version_start -->![Latest Included Version](https://img.shields.io/badge/Latest_Included_Version-1.21.9-slateblue)<!-- latest_version_end -->
 
 This repository contains an automatically updated JSON file which links the Bukkit versions (e.g. `1.20.6-R0.1-SNAPSHOT`) to the corresponding NMS version (e.g. `1_20_R4`).  
 This is useful for Spigot plugins which use NMS and have a Wrapper class for each different version, because as of Paper 1.20.5 the craftbukkit packages no longer contain the NMS version and you can't parse the NMS version from that package like before.
@@ -37,6 +37,7 @@ However, the NMS versions are parsed from the NMS repository at [repo.codemc.io]
 <!-- versions_start -->
 | Minecraft Version   | NMS Version   | Bukkit Version String   |
 |:--------------------|:--------------|:------------------------|
+| 1.21.9              | 1_21_R6       | 1.21.9-R0.1-SNAPSHOT    |
 | 1.21.8              | 1_21_R5       | 1.21.8-R0.1-SNAPSHOT    |
 | 1.21.7              | 1_21_R5       | 1.21.7-R0.1-SNAPSHOT    |
 | 1.21.6              | 1_21_R5       | 1.21.6-R0.1-SNAPSHOT    |
